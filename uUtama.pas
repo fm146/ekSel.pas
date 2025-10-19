@@ -1,0 +1,499 @@
+unit uUtama;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Menus, Grids, StdCtrls;
+
+type
+  TfrmUtama = class(TForm)
+    mmUtama: TMainMenu;
+    mnFile: TMenuItem;
+    mnBaru: TMenuItem;
+    N1: TMenuItem;
+    mnKeluar: TMenuItem;
+    lblSel: TLabel;
+    edtIsi: TEdit;
+    grdTabel: TStringGrid;
+    mnTabel: TMenuItem;
+    mnBaris: TMenuItem;
+    mnKolom: TMenuItem;
+    mnBarTam: TMenuItem;
+    mnBarSip: TMenuItem;
+    mnBarPus: TMenuItem;
+    mnKolTam: TMenuItem;
+    mnKolSip: TMenuItem;
+    mnKolPus: TMenuItem;
+    mnBuka: TMenuItem;
+    mnSimpan: TMenuItem;
+    mnOperasi: TMenuItem;
+    nmBaris1: TMenuItem;
+    nmKolom: TMenuItem;
+    mnCahBar: TMenuItem;
+    mnJumBar: TMenuItem;
+    mnRaBar: TMenuItem;
+    mnCahKol: TMenuItem;
+    mnJumKol: TMenuItem;
+    mnRaKol: TMenuItem;
+    dlgOpen1: TOpenDialog;
+    dlgSave1: TSaveDialog;
+    mnEdit: TMenuItem;
+    mnSalin: TMenuItem;
+    mnPotong: TMenuItem;
+    mnTempel: TMenuItem;
+    procedure mnKeluarClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure grdTabelClick(Sender: TObject);
+    procedure grdTabelKeyPress(Sender: TObject; var Key: Char);
+    procedure edtIsiKeyPress(Sender: TObject; var Key: Char);
+    procedure mnBarTamClick(Sender: TObject);
+    procedure mnKolTamClick(Sender: TObject);
+    procedure mnBarSipClick(Sender: TObject);
+    procedure mnKolSipClick(Sender: TObject);
+    procedure mnBarPusClick(Sender: TObject);
+    procedure mnKolPusClick(Sender: TObject);
+    procedure mnBaruClick(Sender: TObject);
+    procedure mnSimpanClick(Sender: TObject);
+    procedure mnBukaClick(Sender: TObject);
+    procedure mnCahBarClick(Sender: TObject);
+    procedure mnCahKolClick(Sender: TObject);
+    procedure mnJumBarClick(Sender: TObject);
+    procedure mnJumKolClick(Sender: TObject);
+    procedure mnRaBarClick(Sender: TObject);
+    procedure mnRaKolClick(Sender: TObject);
+    procedure mnSalinClick(Sender: TObject);
+    procedure mnTempelClick(Sender: TObject);
+    procedure mnPotongClick(Sender: TObject);
+  private
+    procedure SetJudul;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmUtama: TfrmUtama;
+
+implementation
+
+{$R *.dfm}
+var Kol, Bar, xKol, xBar : Integer;
+    Data                 : string;
+    pindah               : Boolean;
+
+procedure TfrmUtama.SetJudul;
+var K : Integer;
+begin
+  with grdTabel do
+  begin
+    for K := 1 to RowCount-1 do
+      Cells[0,K] := IntToStr(K);
+    for K := 1 to ColCount-1 do
+     Cells[0,0] := 'NOMOR';
+     Cells[1,0] := 'NIM';
+     Cells[2,0] := 'NAMA';
+  end;
+end;
+
+procedure TfrmUtama.mnKeluarClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TfrmUtama.FormCreate(Sender: TObject);
+begin
+  SetJudul;
+  Kol := 1;
+  Bar := 1;
+end;
+
+procedure TfrmUtama.grdTabelClick(Sender: TObject);
+begin
+   with grdTabel do
+    begin
+      Kol := Selection.Left; {grdTabel.Selection}
+      Bar := Selection.Top;
+      edtIsi.Text := Cells[Kol, Bar];
+      lblSel.Caption := chr(Kol + 64)+ IntToStr(Bar);
+    end;
+end;
+
+procedure TfrmUtama.grdTabelKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    with grdTabel do
+      begin
+        Key := #0;
+        if Row < RowCount-1 then
+          Row := Row +1 {grdTabel.Row}
+        else
+          begin
+            Row := 1;
+            if Col < ColCount-1 then
+              Col := Col +1
+            else
+              Col := 1;
+          end;
+      end;
+end;
+
+procedure TfrmUtama.edtIsiKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    with grdTabel do
+      begin
+        Key := #0;
+        Cells[Kol, Bar] := edtIsi.Text;
+        if Row < RowCount-1 then
+          Row := Row +1 {grdTabel.Row}
+        else
+          begin
+            Row := 1;
+            if Col < ColCount-1 then
+              Col := Col +1
+            else
+              Col := 1;
+          end;
+      end;
+end;
+
+procedure TfrmUtama.mnBarTamClick(Sender: TObject);
+begin
+  with grdTabel do
+    begin
+    //baris maksimal 50
+    if RowCount < 51 then
+      begin
+        RowCount := RowCount +1;
+        SetJudul;
+      end;
+    end;
+end;
+
+procedure TfrmUtama.mnKolTamClick(Sender: TObject);
+begin
+ with grdTabel do
+    begin
+    //kolom maksimal 26 (Z)
+    if ColCount < 27 then
+      begin
+        ColCount := ColCount +1;
+        SetJudul;
+      end;
+    end;
+end;
+
+procedure TfrmUtama.mnBarSipClick(Sender: TObject);
+var K, B : Integer;
+begin
+ with grdTabel do
+    begin
+    //baris maksimal 50
+    if RowCount < 51 then
+      begin
+        RowCount := RowCount +1;
+        for B := RowCount-1 downto bar+1 do
+          for K := 1 to ColCount-1 do
+            Cells[K, B] := Cells[K, B-1];
+        Rows[Bar].Clear;
+        edtIsi.Text := '';
+        SetJudul;
+      end;
+    end;
+end;
+
+procedure TfrmUtama.mnKolSipClick(Sender: TObject);
+var K, B : Integer;
+begin
+ with grdTabel do
+    begin
+    //kolom maksimal 26
+    if ColCount < 27 then
+      begin
+        ColCount := ColCount +1;
+        for B := ColCount-1 downto kol+1 do
+          for K := 1 to rowCount-1 do
+            Cells[K, B] := Cells[K, B-1];
+        Cols[Kol].Clear;
+        edtIsi.Text := '';
+        SetJudul;
+      end;
+    end;
+end;
+
+procedure TfrmUtama.mnBarPusClick(Sender: TObject);
+var K, B : Integer;
+begin
+ with grdTabel do
+    begin
+    //baris maksimal 1
+    if RowCount > 2 then
+      begin
+        for B := Bar to RowCount-2 do
+          for K := 1 to ColCount-1 do
+            Cells[K, B] := Cells[K, B+1];
+        Rows[RowCount-1].Clear;
+        if Bar = RowCount-1 then
+          Bar := Bar -1;
+        edtIsi.Text := Cells[kol, bar];
+        RowCount := RowCount -1;
+        SetJudul;
+      end;
+    end;
+end;
+
+procedure TfrmUtama.mnKolPusClick(Sender: TObject);
+var K, B : Integer;
+begin
+ with grdTabel do
+    begin
+    //Kolom maksimal 1
+    if ColCount > 2 then
+      begin
+        for K := Kol to ColCount-2 do
+          for B := 1 to RowCount-1 do
+            Cells[K, B] := Cells[K+1, B];
+        Cols[ColCount-1].Clear;
+        if Kol = ColCount-1 then
+          Kol := Kol -1;
+        edtIsi.Text := Cells[kol, bar];
+        ColCount := ColCount -1;
+        SetJudul;
+      end;
+    end;
+end;
+
+procedure TfrmUtama.mnBaruClick(Sender: TObject);
+var K : Integer;
+begin
+  with grdTabel do
+    begin
+      for K := 1 to RowCount-1 do
+        Rows[K].Clear;
+      SetJudul;
+      Col := 1;
+      Row := 1;
+      edtIsi.Text := Cells[kol, bar];
+    end;
+end;
+
+procedure TfrmUtama.mnSimpanClick(Sender: TObject);
+var FT       : TextFile;
+    K, B     : Integer;
+    namafile : string;
+begin
+  with grdTabel do
+    if dlgSave1.Execute then
+      begin
+        namafile := dlgSave1.FileName;
+        AssignFile(FT, namafile);
+        Rewrite(FT);
+
+        for B := 1 to RowCount-1 do
+          for K := 1 to ColCount-1 do
+            begin
+              write(FT, Cells[K,B]);
+              if K < ColCount-1 then   //ingat 1,2,3,4
+              write(FT,';')
+            else
+              Writeln(FT);
+          end;
+        CloseFile(FT);
+        ShowMessage('File' + namafile + 'telah disimpan...');
+    end;
+end;
+
+procedure TfrmUtama.mnBukaClick(Sender: TObject);
+var FT     : TextFile;
+    K,B,P  : Integer;
+    st,Isi, namafile : string;
+begin
+  with grdTabel do
+    if dlgOpen1.Execute then
+     begin
+       namafile := dlgOpen1.FileName;
+       AssignFile(FT, namafile);
+       Reset(FT);
+
+        B := 0;
+        while not Eof(FT) do
+         begin
+            B := B + 1;
+            Readln(FT, st);
+            K := 0;
+            repeat
+              P := Pos(';', st); //cari posisi dari ;
+              K := K + 1;
+              Isi := Copy(st, 1, P-1);
+              Delete(st, 1, P);
+              Cells[K,B] := Isi;
+
+            until P = 0; //sampai tidak ada titik koma;
+            Cells[K,B] := st;
+          end;
+          CloseFile(FT);
+
+          if B > 0 then
+            RowCount := B +1;
+          if K > 0 then
+            ColCount := K +1;
+          SetJudul;
+          Col := 1;
+          Row := 1;
+          edtIsi.Text := Cells[kol, bar];
+     end;
+end;
+
+procedure TfrmUtama.mnCahBarClick(Sender: TObject);
+var K, N : Integer;
+
+begin
+  N := 0;
+  with grdTabel do
+    begin
+      for  K := 1 to Kol-1 do
+        if Cells[K, Bar] <> '' then
+        N := N + 1;
+
+        Cells[Kol, Bar] := IntToStr(N);
+        edtIsi.Text     := IntToStr(N);
+    end;
+end;
+
+procedure TfrmUtama.mnCahKolClick(Sender: TObject);
+var B, N : Integer;
+
+begin
+  N := 0;
+  with grdTabel do
+    begin
+      for  B := 1 to Bar-1 do
+        if Cells[Kol, B] <> '' then
+        N := N + 1;
+
+        Cells[Kol, Bar] := IntToStr(N);
+        edtIsi.Text     := IntToStr(N);
+    end;
+end;
+
+procedure TfrmUtama.mnJumBarClick(Sender: TObject);
+var K : Integer;
+    Jum : Real; // angka pecahan bisa
+begin
+  Jum := 0;
+  with grdTabel do
+    begin
+      for  K := 1 to Kol-1 do
+        Jum  := Jum + StrToFloatDef(Cells[K, Bar],0);
+
+        //tampilkan
+        Cells[Kol, Bar] := FloatToStr(Jum);
+        edtIsi.Text     := FloatToStr(Jum);
+    end;
+end;
+
+procedure TfrmUtama.mnJumKolClick(Sender: TObject);
+var B   : Integer;
+    Jum : Real; // angka pecahan bisa
+begin
+  Jum := 0;
+  with grdTabel do
+    begin
+      for  B := 1 to Bar-1 do
+        Jum  := Jum + StrToFloatDef(Cells[Kol, B],0);
+
+        //tampilkan
+        Cells[Kol, Bar] := FloatToStr(Jum);
+        edtIsi.Text     := FloatToStr(Jum);
+    end;
+end;
+
+procedure TfrmUtama.mnRaBarClick(Sender: TObject);
+var K, N, kode   : Integer;
+    Jum, Rata, X : Real; // angka pecahan bisa
+begin
+  Jum := 0;
+  N   := 0;
+
+  with grdTabel do
+    begin
+      for  K := 1 to Kol-1 do
+        begin
+          val(Cells[K, Bar], X, kode); //mengkonfersi isi cell
+          if kode = 0 then
+            begin
+              Jum := Jum + X;
+              N   := N + 1;
+            end;
+        end;
+        //tampilkan
+        if N > 0 then
+          Rata := Jum / N
+        else
+          Rata := 0;
+
+        Cells[Kol, Bar] := FloatToStr(Rata);
+        edtIsi.Text     := FloatToStr(Rata);
+    end;
+end;
+
+procedure TfrmUtama.mnRaKolClick(Sender: TObject);
+var B, N, kode   : Integer;
+    Jum, Rata, X : Real; // angka pecahan bisa
+begin
+  Jum := 0;
+  N   := 0;
+
+  with grdTabel do
+    begin
+      for  B := 1 to Bar-1 do
+        begin
+          val(Cells[Kol, B], X, kode); //mengkonfersi isi cell
+          if kode = 0 then
+            begin
+              Jum := Jum + X;
+              N   := N + 1;
+            end;
+        end;
+        //tampilkan
+        if N > 0 then
+          Rata := Jum / N
+        else
+          Rata := 0;
+
+        Cells[Kol, Bar] := FloatToStr(Rata);
+        edtIsi.Text     := FloatToStr(Rata);
+    end;
+end;
+
+procedure TfrmUtama.mnSalinClick(Sender: TObject);
+begin
+  Data             := grdTabel.Cells[Kol, Bar];
+  mnTempel.Enabled := True;
+  pindah           := False;
+end;
+
+procedure TfrmUtama.mnTempelClick(Sender: TObject);
+begin
+  with grdTabel do
+    begin
+      Cells[Kol, Bar] := Data;
+      edtIsi.Text := Cells[Kol, Bar];
+      if pindah then
+        begin
+          Cells[xKol, xBar] := '';
+          mnTempel.Enabled  := False;
+        end;
+    end;
+end;
+
+procedure TfrmUtama.mnPotongClick(Sender: TObject);
+begin
+  Data := grdTabel.Cells[Kol, Bar];
+  mnTempel.Enabled := True;
+  pindah := True;
+  xKol := Kol;
+  xBar := Bar;
+end;
+
+end.
